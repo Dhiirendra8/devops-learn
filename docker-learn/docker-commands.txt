@@ -1,0 +1,58 @@
+##list images
+docker images
+
+##Delete specific image with name
+docker image rm producer-1.0
+
+##Docker build with Dockerfile
+docker build . --tag dhiirendra8/go-producer:0.0.2.SNAPSHOT
+docker build . --tag dhiirendra8/go-consumer:0.0.1.SNAPSHOT
+
+## Login
+docker login
+
+##Rename image and untag
+docker image tag go-producer:0.0.1.SNAPSHOT dhiirendra8/go-producer:0.0.1.SNAPSHOT
+docker image tag go-consumer:0.0.1.SNAPSHOT dhiirendra8/go-consumer:0.0.1.SNAPSHOT
+--untag
+docker image rm go-producer:0.0.1.SNAPSHOT
+docker image rm go-consumer:0.0.1.SNAPSHOT
+
+##Push image
+docker push dhiirendra8/go-producer:0.0.2.SNAPSHOT
+docker push dhiirendra8/go-consumer:0.0.1.SNAPSHOT
+
+##Run
+docker run --publish 3000:3000 dhiirendra8/go-producer:0.0.1.SNAPSHOT
+docker run --name go-consumer dhiirendra8/go-consumer:0.0.2.SNAPSHOT
+
+#######################################################################################3
+## Bridge network driver -- https://docs.docker.com/network/drivers/bridge/
+
+docker network ls
+
+** User Defined Bridge **
+--User-defined bridges provide automatic DNS resolution between containers.
+
+##create a user-defined bridge network
+docker network create my-net
+
+##remove a user-defined bridge network
+docker network rm my-net
+
+##Connect a container to a user-defined bridge
+docker create --name my-nginx \
+  --network my-net \
+  --publish 8080:80 \
+  nginx:latest
+
+docker create --name go-consumer --network my-net dhiirendra8/go-consumer:0.0.1.SNAPSHOT 
+
+##To connect a running container to an existing user-defined bridge
+docker network connect my-net my-nginx
+docker network connect my-net broker
+docker network connect my-net go-producer
+docker network connect my-net go-consumer
+
+##Disconnect a container from a user-defined bridge
+docker network disconnect my-net my-nginx
